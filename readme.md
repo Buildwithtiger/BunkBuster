@@ -1,4 +1,4 @@
-# 🚫🎒 BunkBuster
+# 🚫🎒 BunkBuster.  Work in process project 12/10/2026
 
 ### An Anti-Bunk Attendance System for Educational Institutions
 
