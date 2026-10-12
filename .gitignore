@@ -8,3 +8,6 @@ bin/
 .DS_Store
 *.log
 .env
+.idea/
+target/
+*.iml
