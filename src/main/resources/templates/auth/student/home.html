@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Home — BunkBuster</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="~{common/navbar :: navbar}"></div>
+
+<h1>🏠 Welcome, <span th:text="${student.name}"></span>!</h1>
+
+<div class="grid">
+    <a href="/student/subjects" class="card">📚 Subjects</a>
+    <a href="/student/profile" class="card">👤 Profile</a>
+    <a href="/student/leaderboard" class="card">🏆 Leaderboard</a>
+    <a href="/student/notices" class="card">📢 Notices</a>
+    <a href="/student/classmates" class="card">👥 Classmates</a>
+    <a href="/chatbot" class="card">🤖 Chatbot</a>
+</div>
+
+<a href="/auth/logout" style="color:red;">🚪 Logout</a>
+</body>
+</html>

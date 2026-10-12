@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Logout OTP — BunkBuster</title>
+</head>
+<body>
+<h2>🔒 Logout Verification</h2>
+<p>Teacher ko ye OTP dikhaya gaya hai. Enter karo:</p>
+<p><b th:text="${otp}"></b></p>
+
+<p th:if="${error}" th:text="${error}" style="color:red;"></p>
+
+<form method="post" th:action="@{/auth/logout/verify}">
+    <input type="text" name="otp" maxlength="6" required>
+    <button type="submit">Verify & Logout</button>
+</form>
+
+<a th:href="@{/student/home}">Cancel Logout</a>
+</body>
+</html>

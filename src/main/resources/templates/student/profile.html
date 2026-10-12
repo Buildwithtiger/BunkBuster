@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Profile</title>
+<link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<body>
+<div th:replace="~{common/navbar :: navbar}"></div>
+<div class="container">
+<h2>👤 My Profile</h2>
+<p><b>Name:</b> <span th:text="${student != null ? student.name : 'N/A'}"></span></p>
+<p><b>Barcode:</b> <span th:text="${student != null ? student.barcode : 'N/A'}"></span></p>
+<p><b>Class:</b> <span th:text="${student != null ? student.className : 'N/A'}"></span></p>
+</div>
+</body></html>

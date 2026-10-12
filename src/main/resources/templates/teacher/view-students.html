@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Students</title>
+<link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<body>
+<div class="dashboard-wrapper">
+    <aside class="sidebar">
+        <div class="sidebar-brand">🎯 BunkBuster</div>
+        <nav class="sidebar-menu">
+            <a href="/teacher/dashboard">🏠 Dashboard</a>
+            <a href="/teacher/students" class="active">👥 Students</a>
+            <a href="/teacher/students/add">➕ Add Student</a>
+            <a href="/auth/logout" style="color:#ff6b6b;">🚪 Logout</a>
+        </nav>
+    </aside>
+    <main class="main-content">
+        <header class="topbar">
+            <h1>👥 All Students</h1>
+            <a href="/teacher/students/add" class="action-btn" style="width:auto;padding:10px 20px;">➕ Add New</a>
+        </header>
+        <section class="section">
+            <table class="data-table">
+                <thead>
+                <tr><th>#</th><th>Name</th><th>Barcode</th><th>Roll</th><th>Class</th><th>Email</th><th>Actions</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="s, iter : ${students}">
+                    <td th:text="${iter.index + 1}">1</td>
+                    <td th:text="${s.name}">-</td>
+                    <td th:text="${s.barcode}">-</td>
+                    <td th:text="${s.rollNumber}">-</td>
+                    <td th:text="${s.className}">-</td>
+                    <td th:text="${s.email}">-</td>
+                    <td>
+                        <a th:href="@{'/teacher/students/edit/' + ${s.id}}" class="btn-icon">✏️</a>
+                        <a th:href="@{'/teacher/students/delete/' + ${s.id}}" class="btn-icon"
+                           onclick="return confirm('Delete?')">🗑️</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+</div>
+</body>
+</html>

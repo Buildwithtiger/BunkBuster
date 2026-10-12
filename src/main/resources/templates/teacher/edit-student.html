@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Edit Student</title>
+<link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<body>
+<div class="dashboard-wrapper">
+    <aside class="sidebar">
+        <div class="sidebar-brand">🎯 BunkBuster</div>
+        <nav class="sidebar-menu">
+            <a href="/teacher/dashboard">🏠 Dashboard</a>
+            <a href="/teacher/students" class="active">👥 Students</a>
+            <a href="/auth/logout" style="color:#ff6b6b;">🚪 Logout</a>
+        </nav>
+    </aside>
+    <main class="main-content">
+        <header class="topbar"><h1>✏️ Edit Student</h1></header>
+        <section class="section" style="max-width:600px;">
+            <form method="post" th:action="@{'/teacher/students/edit/' + ${student.id}}">
+                <label>Barcode (read-only)</label>
+                <input type="text" th:value="${student.barcode}" disabled>
+                <label>Name *</label>
+                <input type="text" name="name" th:value="${student.name}" required>
+                <label>Email</label>
+                <input type="email" name="email" th:value="${student.email}">
+                <label>Phone</label>
+                <input type="text" name="phone" th:value="${student.phone}">
+                <label>Parent Phone</label>
+                <input type="text" name="parentPhone" th:value="${student.parentPhone}">
+                <label>Gender</label>
+                <input type="text" name="gender" th:value="${student.gender}">
+                <label>Class</label>
+                <input type="text" name="className" th:value="${student.className}">
+                <label>Roll Number</label>
+                <input type="text" name="rollNumber" th:value="${student.rollNumber}">
+                <button type="submit">💾 Save Changes</button>
+            </form>
+        </section>
+    </main>
+</div>
+</body>
+</html>
