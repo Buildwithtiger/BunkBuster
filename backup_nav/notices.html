@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Notices — BunkBuster</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <span>🎯 BunkBuster</span>
+        <button class="sidebar-close" onclick="toggleSidebar()">✕</button>
+    </div>
+    <div class="drawer-profile" th:if="${student}">
+        <div class="profile-photo-wrap">
+            <img th:if="${student.profilePhoto != null}" th:src="${student.profilePhoto}" class="profile-photo">
+            <div th:unless="${student.profilePhoto != null}" class="profile-photo default">
+                <span th:text="${#strings.substring(student.name, 0, 1)}">R</span>
+            </div>
+            <form th:action="@{/student/upload-photo}" method="post" enctype="multipart/form-data" class="photo-form">
+                <label for="photoInput" class="photo-edit-btn">📷</label>
+                <input type="file" id="photoInput" name="photo" accept="image/*" onchange="this.form.submit()" style="display:none;">
+            </form>
+        </div>
+        <div class="profile-name" th:text="${student.name}">Student</div>
+        <div class="profile-roll">
+            <span th:text="${student.className}">BCA-3</span> · Roll <span th:text="${student.rollNumber}">01</span>
+        </div>
+    </div>
+    <nav class="sidebar-menu">
+        <a href="/student/home">🏠 Dashboard</a>
+        <a href="/student/subjects">📚 Subjects</a>
+        <a href="/student/mark-attendance">✅ Mark Attendance</a>
+        <a href="/student/leaderboard">🏆 Leaderboard</a>
+        <a href="/student/notices" class="active">📢 Notices</a>
+        <a href="/student/classmates">👥 Classmates</a>
+        <a href="/student/profile">👤 Profile</a>
+        <a href="/auth/logout" style="color:#ff6b6b;">🚪 Logout</a>
+    </nav>
+</aside>
+
+<main class="main-content">
+    <div th:replace="~{common/navbar :: navbar(${student})}"></div>
+
+    <section class="section">
+        <h2>📢 Notices & Announcements</h2>
+
+        <!-- Sample notices — baad mein DB se aayega -->
+        <div class="notice-list">
+            <div class="notice-item urgent">
+                <div class="notice-icon">🔴</div>
+                <div class="notice-content">
+                    <div class="notice-title">Assignment Deadline</div>
+                    <div class="notice-text">Java assignment submit karo Friday tak. Late submission accept nahi hoga.</div>
+                    <div class="notice-meta">Posted: Today, 10:30 AM · By Prof. Sharma</div>
+                </div>
+            </div>
+
+            <div class="notice-item">
+                <div class="notice-icon">📚</div>
+                <div class="notice-content">
+                    <div class="notice-title">Extra Class Tomorrow</div>
+                    <div class="notice-text">Kal subah 8 baje Database ka extra lecture hoga. Attendance compulsory hai.</div>
+                    <div class="notice-meta">Posted: Yesterday, 4:15 PM · By Prof. Priya</div>
+                </div>
+            </div>
+
+            <div class="notice-item">
+                <div class="notice-icon">🎉</div>
+                <div class="notice-content">
+                    <div class="notice-title">Holiday Announcement</div>
+                    <div class="notice-text">Monday ko college band rahega (festival ki wajah se).</div>
+                    <div class="notice-meta">Posted: 2 days ago · By Admin</div>
+                </div>
+            </div>
+
+            <div class="notice-item">
+                <div class="notice-icon">📝</div>
+                <div class="notice-content">
+                    <div class="notice-title">Practical Exam Schedule</div>
+                    <div class="notice-text">Next week practical exams start honge. Timetable notice board pe check karo.</div>
+                    <div class="notice-meta">Posted: 3 days ago · By Exam Cell</div>
+                </div>
+            </div>
+
+            <div class="notice-item">
+                <div class="notice-icon">⚽</div>
+                <div class="notice-content">
+                    <div class="notice-title">Sports Day</div>
+                    <div class="notice-text">Inter-college sports day 25th ko hoga. Interested students register karo.</div>
+                    <div class="notice-meta">Posted: 4 days ago · By Sports Dept</div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<a href="/chatbot" class="chatbot-float" title="Ask Chatbot">🤖</a>
+
+<script>
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('open');
+        document.getElementById('overlay').classList.toggle('open');
+    }
+</script>
+</body>
+</html>

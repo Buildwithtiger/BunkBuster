@@ -14,7 +14,7 @@
         </nav>
     </aside>
     <main class="main-content">
-        <header class="topbar"><h1>➕ Add New Student</h1></header>
+        <div th:replace="~{common/navbar :: navbar(${student})}"></div>
         <section class="section" style="max-width:600px;">
             <p th:if="${error}" class="error-text" th:text="${error}"></p>
             <form method="post" th:action="@{/teacher/students/add}">

@@ -34,6 +34,10 @@ public class Student {
     @Column(name = "device_id")
     private String deviceId;
 
+    // Profile photo — base64 encoded (long text)
+    @Column(name = "profile_photo", columnDefinition = "LONGTEXT")
+    private String profilePhoto;
+
     @Column(name = "is_active")
     private Boolean isActive = true;
 
@@ -74,6 +78,9 @@ public class Student {
 
     public String getDeviceId() { return deviceId; }
     public void setDeviceId(String deviceId) { this.deviceId = deviceId; }
+
+    public String getProfilePhoto() { return profilePhoto; }
+    public void setProfilePhoto(String profilePhoto) { this.profilePhoto = profilePhoto; }
 
     public Boolean getIsActive() { return isActive; }
     public void setIsActive(Boolean isActive) { this.isActive = isActive; }

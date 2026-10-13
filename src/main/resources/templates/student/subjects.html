@@ -1,8 +1,138 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><title>Subjects</title>
-<link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<head>
+    <meta charset="UTF-8">
+    <title>Subjects — BunkBuster</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
 <body>
-<div th:replace="~{common/navbar :: navbar}"></div>
-<h1 style="color:white; text-align:center; margin-top:40px;">📚 Subjects</h1>
-</body></html>
+
+<div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <span>🎯 BunkBuster</span>
+        <button class="sidebar-close" onclick="toggleSidebar()">✕</button>
+    </div>
+    <div class="drawer-profile" th:if="${student}">
+        <div class="profile-photo-wrap">
+            <img th:if="${student.profilePhoto != null}" th:src="${student.profilePhoto}" class="profile-photo">
+            <div th:unless="${student.profilePhoto != null}" class="profile-photo default">
+                <span th:text="${#strings.substring(student.name, 0, 1)}">R</span>
+            </div>
+            <form th:action="@{/student/upload-photo}" method="post" enctype="multipart/form-data" class="photo-form">
+                <label for="photoInput" class="photo-edit-btn">📷</label>
+                <input type="file" id="photoInput" name="photo" accept="image/*" onchange="this.form.submit()" style="display:none;">
+            </form>
+        </div>
+        <div class="profile-name" th:text="${student.name}">Student</div>
+        <div class="profile-roll">
+            <span th:text="${student.className}">BCA-3</span> · Roll <span th:text="${student.rollNumber}">01</span>
+        </div>
+    </div>
+    <nav class="sidebar-menu">
+        <a href="/student/home">🏠 Dashboard</a>
+        <a href="/student/subjects" class="active">📚 Subjects</a>
+        <a href="/student/mark-attendance">✅ Mark Attendance</a>
+        <a href="/student/leaderboard">🏆 Leaderboard</a>
+        <a href="/student/classmates">👥 Classmates</a>
+        <a href="/student/profile">👤 Profile</a>
+        <a href="/auth/logout" style="color:#ff6b6b;">🚪 Logout</a>
+    </nav>
+</aside>
+
+<main class="main-content">
+   <div th:replace="~{common/navbar :: navbar(${student})}"></div>
+
+    <section class="section">
+        <h2>📚 My Subjects</h2>
+        <p style="color:#64748b;font-size:14px;margin-bottom:15px;">
+            Subject-wise attendance aur progress
+        </p>
+
+        <div class="subjects-grid">
+            <div class="subject-card">
+                <div class="subject-icon">☕</div>
+                <div class="subject-name">Java Programming</div>
+                <div class="subject-teacher">Prof. Sharma</div>
+                <div class="subject-attendance">
+                    <div class="sub-att-bar">
+                        <div class="sub-att-fill" style="width:93%"></div>
+                    </div>
+                    <div class="sub-att-text">42/45 (93%)</div>
+                </div>
+            </div>
+
+            <div class="subject-card">
+                <div class="subject-icon">🗄️</div>
+                <div class="subject-name">Database Management</div>
+                <div class="subject-teacher">Prof. Priya</div>
+                <div class="subject-attendance">
+                    <div class="sub-att-bar">
+                        <div class="sub-att-fill" style="width:84%"></div>
+                    </div>
+                    <div class="sub-att-text">38/45 (84%)</div>
+                </div>
+            </div>
+
+            <div class="subject-card">
+                <div class="subject-icon">🌐</div>
+                <div class="subject-name">Web Development</div>
+                <div class="subject-teacher">Prof. Amit</div>
+                <div class="subject-attendance">
+                    <div class="sub-att-bar">
+                        <div class="sub-att-fill" style="width:89%"></div>
+                    </div>
+                    <div class="sub-att-text">40/45 (89%)</div>
+                </div>
+            </div>
+
+            <div class="subject-card">
+                <div class="subject-icon">📊</div>
+                <div class="subject-name">Data Structures</div>
+                <div class="subject-teacher">Prof. Sharma</div>
+                <div class="subject-attendance">
+                    <div class="sub-att-bar">
+                        <div class="sub-att-fill" style="width:76%"></div>
+                    </div>
+                    <div class="sub-att-text">34/45 (76%)</div>
+                </div>
+            </div>
+
+            <div class="subject-card">
+                <div class="subject-icon">🖥️</div>
+                <div class="subject-name">Operating Systems</div>
+                <div class="subject-teacher">Prof. Priya</div>
+                <div class="subject-attendance">
+                    <div class="sub-att-bar">
+                        <div class="sub-att-fill" style="width:88%"></div>
+                    </div>
+                    <div class="sub-att-text">40/45 (88%)</div>
+                </div>
+            </div>
+
+            <div class="subject-card">
+                <div class="subject-icon">🔢</div>
+                <div class="subject-name">Mathematics</div>
+                <div class="subject-teacher">Prof. Amit</div>
+                <div class="subject-attendance">
+                    <div class="sub-att-bar">
+                        <div class="sub-att-fill" style="width:82%"></div>
+                    </div>
+                    <div class="sub-att-text">37/45 (82%)</div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<a href="/chatbot" class="chatbot-float" title="Ask Chatbot">🤖</a>
+
+<script>
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('open');
+        document.getElementById('overlay').classList.toggle('open');
+    }
+</script>
+</body>
+</html>

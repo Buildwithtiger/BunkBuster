@@ -2,21 +2,147 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Student Home</title>
+    <title>Student Home — BunkBuster</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-<div th:replace="~{common/navbar :: navbar}"></div>
-<h1 style="color:white; text-align:center; margin-top:30px;">
-    🏠 Welcome, <span th:text="${student != null ? student.name : 'Student'}"></span>!
-</h1>
-<div class="grid">
-    <a href="/student/subjects" class="card">📚 Subjects</a>
-    <a href="/student/profile" class="card">👤 Profile</a>
-    <a href="/student/leaderboard" class="card">🏆 Leaderboard</a>
-    <a href="/student/notices" class="card">📢 Notices</a>
-    <a href="/student/classmates" class="card">👥 Classmates</a>
-    <a href="/chatbot" class="card">🤖 Chatbot</a>
-</div>
+
+<!-- OVERLAY -->
+<div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<!-- ═══ DRAWER / SIDEBAR ═══ -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <span>🎯 BunkBuster</span>
+        <button class="sidebar-close" onclick="toggleSidebar()">✕</button>
+    </div>
+
+    <!-- PROFILE CARD (circular photo + name) -->
+    <div class="drawer-profile" th:if="${student}">
+        <div class="profile-photo-wrap">
+            <img th:if="${student.profilePhoto != null}"
+                 th:src="${student.profilePhoto}"
+                 alt="Profile" class="profile-photo">
+            <div th:unless="${student.profilePhoto != null}" class="profile-photo default">
+                <span th:text="${#strings.substring(student.name, 0, 1)}">R</span>
+            </div>
+
+            <form th:action="@{/student/upload-photo}" method="post"
+                  enctype="multipart/form-data" class="photo-form">
+                <label for="photoInput" class="photo-edit-btn">📷</label>
+                <input type="file" id="photoInput" name="photo" accept="image/*"
+                       onchange="this.form.submit()" style="display:none;">
+            </form>
+        </div>
+        <div class="profile-name" th:text="${student.name}">Rahul Kumar</div>
+        <div class="profile-roll">
+            <span th:text="${student.className}">BCA-3</span> ·
+            Roll <span th:text="${student.rollNumber}">01</span>
+        </div>
+    </div>
+
+    <!-- MENU (bigger) -->
+    <nav class="sidebar-menu">
+        <a href="/student/home" class="active">🏠 Dashboard</a>
+        <a href="/student/subjects">📚 Subjects</a>
+        <a href="/student/mark-attendance">✅ Mark Attendance</a>
+        <a href="/student/leaderboard">🏆 Leaderboard</a>
+        <a href="/student/classmates">👥 Classmates</a>
+        <a href="/student/profile">👤 Profile</a>
+        <a href="/auth/logout" style="color:#ff6b6b;">🚪 Logout</a>
+    </nav>
+</aside>
+
+<!-- ═══ MAIN CONTENT ═══ -->
+<main class="main-content">
+    <div th:replace="~{common/navbar :: navbar(${student})}"></div>
+
+    <!-- ═══ TOP RANKERS STRIP ═══ -->
+    <section class="section">
+        <h2>🏆 Top Rankers — Class <span th:text="${student.className}">BCA-3</span></h2>
+        <div class="rankers-strip">
+            <div class="ranker-card" th:each="s, iter : ${topStudents}">
+                <div class="ranker-photo-wrap">
+                    <img th:if="${s.profilePhoto != null}"
+                         th:src="${s.profilePhoto}"
+                         alt="Photo" class="ranker-photo">
+                    <div th:unless="${s.profilePhoto != null}" class="ranker-photo default">
+                        <span th:text="${#strings.substring(s.name, 0, 1)}">R</span>
+                    </div>
+                    <span class="ranker-badge"
+                          th:classappend="${iter.index == 0} ? 'gold' : (${iter.index == 1} ? 'silver' : (${iter.index == 2} ? 'bronze' : ''))"
+                          th:text="${iter.index + 1}">1</span>
+                </div>
+                <div class="ranker-name" th:text="${s.name}">Name</div>
+                <div class="ranker-score">
+                    <span th:text="${90 - iter.index * 5}">90</span>%
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ WELCOME ═══ -->
+    <section class="section">
+        <h2>🏠 Welcome back, <span th:text="${student != null ? student.name : 'Student'}"></span>!</h2>
+        <p style="color:#64748b;font-size:14px;" th:if="${student}">
+            Class: <b th:text="${student.className}"></b> · Roll: <b th:text="${student.rollNumber}"></b>
+        </p>
+    </section>
+
+    <!-- ═══ LIVE LECTURES ═══ -->
+    <section class="section" th:if="${lectures != null and !lectures.isEmpty()}">
+        <h2>🔴 Live Lectures</h2>
+        <table class="data-table">
+            <thead>
+                <tr><th>Subject</th><th>Class</th><th>Ends In</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="l : ${lectures}" class="lecture-row" th:attr="data-end=${l.endTime}">
+                <td><b th:text="${l.subject}"></b></td>
+                <td th:text="${l.className}"></td>
+                <td><span class="countdown" th:attr="data-end=${l.endTime}">--:--</span></td>
+                <td><a th:href="@{/student/mark-attendance}" class="btn-tick">Mark Present</a></td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="section" th:if="${lectures == null or lectures.isEmpty()}">
+        <h2>📭 No Active Lectures</h2>
+        <p style="color:#64748b;font-size:14px;">
+            Teacher ne abhi koi lecture schedule nahi kiya.
+        </p>
+    </section>
+
+</main>
+
+<!-- FLOATING CHATBOT -->
+<a href="/chatbot" class="chatbot-float" title="Ask Chatbot">🤖</a>
+
+<script>
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('open');
+        document.getElementById('overlay').classList.toggle('open');
+    }
+
+    function updateCountdowns() {
+        document.querySelectorAll('.countdown').forEach(el => {
+            const endTime = new Date(el.dataset.end);
+            const now = new Date();
+            const diff = endTime - now;
+            if (diff <= 0) {
+                const row = el.closest('.lecture-row');
+                if (row) row.style.display = 'none';
+                return;
+            }
+            const mins = Math.floor(diff / 60000);
+            const secs = Math.floor((diff % 60000) / 1000);
+            el.textContent = mins + 'm ' + secs + 's';
+        });
+    }
+    setInterval(updateCountdowns, 1000);
+    updateCountdowns();
+    setTimeout(() => { location.reload(); }, 30000);
+</script>
 </body>
 </html>

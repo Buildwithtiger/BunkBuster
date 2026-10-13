@@ -13,7 +13,7 @@
         </nav>
     </aside>
     <main class="main-content">
-        <header class="topbar"><h1>✏️ Edit Student</h1></header>
+        <div th:replace="~{common/navbar :: navbar(${student})}"></div>
         <section class="section" style="max-width:600px;">
             <form method="post" th:action="@{'/teacher/students/edit/' + ${student.id}}">
                 <label>Barcode (read-only)</label>

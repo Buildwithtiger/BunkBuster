@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>My Profile — BunkBuster</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <span>🎯 BunkBuster</span>
+        <button class="sidebar-close" onclick="toggleSidebar()">✕</button>
+    </div>
+    <div class="drawer-profile" th:if="${student}">
+        <div class="profile-photo-wrap">
+            <img th:if="${student.profilePhoto != null}" th:src="${student.profilePhoto}" class="profile-photo">
+            <div th:unless="${student.profilePhoto != null}" class="profile-photo default">
+                <span th:text="${#strings.substring(student.name, 0, 1)}">R</span>
+            </div>
+            <form th:action="@{/student/upload-photo}" method="post" enctype="multipart/form-data" class="photo-form">
+                <label for="photoInput2" class="photo-edit-btn">📷</label>
+                <input type="file" id="photoInput2" name="photo" accept="image/*" onchange="this.form.submit()" style="display:none;">
+            </form>
+        </div>
+        <div class="profile-name" th:text="${student.name}">Student</div>
+        <div class="profile-roll">
+            <span th:text="${student.className}">BCA-3</span> · Roll <span th:text="${student.rollNumber}">01</span>
+        </div>
+    </div>
+    <nav class="sidebar-menu">
+        <a href="/student/home">🏠 Dashboard</a>
+        <a href="/student/subjects">📚 Subjects</a>
+        <a href="/student/mark-attendance">✅ Mark Attendance</a>
+        <a href="/student/leaderboard">🏆 Leaderboard</a>
+        <a href="/student/notices">📢 Notices</a>
+        <a href="/student/classmates">👥 Classmates</a>
+        <a href="/student/profile" class="active">👤 Profile</a>
+        <a href="/auth/logout" style="color:#ff6b6b;">🚪 Logout</a>
+    </nav>
+</aside>
+
+<main class="main-content">
+    <div th:replace="~{common/navbar :: navbar(${student})}"></div>
+
+    <!-- ═══ PROFILE HEADER WITH CIRCULAR % ═══ -->
+    <section class="section profile-header-card" th:if="${student}">
+        <div class="profile-hero">
+            <!-- Circular photo with % ring -->
+            <div class="profile-hero-photo">
+                <svg class="progress-ring" width="180" height="180">
+                    <circle class="progress-ring-circle-bg" stroke="#e2e8f0" stroke-width="8" fill="transparent" r="80" cx="90" cy="90"/>
+                    <circle class="progress-ring-circle" stroke="url(#grad)" stroke-width="8" fill="transparent" r="80" cx="90" cy="90"
+                            stroke-dasharray="502.4"
+                            stroke-dashoffset="50.24"/>
+                    <defs>
+                        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#667eea"/>
+                            <stop offset="100%" stop-color="#764ba2"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <div class="profile-hero-img">
+                    <img th:if="${student.profilePhoto != null}" th:src="${student.profilePhoto}" class="hero-photo">
+                    <div th:unless="${student.profilePhoto != null}" class="hero-photo default">
+                        <span th:text="${#strings.substring(student.name, 0, 1)}">R</span>
+                    </div>
+                </div>
+                <div class="profile-percent-label">90%</div>
+
+                <!-- Change photo button -->
+                <form th:action="@{/student/upload-photo}" method="post" enctype="multipart/form-data" class="photo-form-hero">
+                    <label for="photoHero" class="hero-edit-btn">📷</label>
+                    <input type="file" id="photoHero" name="photo" accept="image/*" onchange="this.form.submit()" style="display:none;">
+                </form>
+            </div>
+
+            <div class="profile-hero-info">
+                <h2 th:text="${student.name}">Rahul Kumar</h2>
+                <p class="hero-role">
+                    <span th:text="${student.className}">BCA-3</span> ·
+                    Roll <span th:text="${student.rollNumber}">01</span> ·
+                    Barcode <b th:text="${student.barcode}">STU001</b>
+                </p>
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <div class="hero-stat-val">90%</div>
+                        <div class="hero-stat-lbl">Attendance</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-val">85%</div>
+                        <div class="hero-stat-lbl">Activity</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-val">#5</div>
+                        <div class="hero-stat-lbl">Class Rank</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ PERSONAL DETAILS ═══ -->
+    <section class="section" th:if="${student}">
+        <h2>📋 Personal Details</h2>
+        <div class="details-grid">
+            <div class="detail-item">
+                <div class="detail-label">Full Name</div>
+                <div class="detail-value" th:text="${student.name}">-</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Barcode</div>
+                <div class="detail-value" th:text="${student.barcode}">-</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Email</div>
+                <div class="detail-value" th:text="${student.email}">-</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Phone</div>
+                <div class="detail-value" th:text="${student.phone}">-</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Parent Phone</div>
+                <div class="detail-value" th:text="${student.parentPhone}">-</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Gender</div>
+                <div class="detail-value" th:text="${student.gender}">-</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Class</div>
+                <div class="detail-value" th:text="${student.className}">-</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Roll Number</div>
+                <div class="detail-value" th:text="${student.rollNumber}">-</div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<a href="/chatbot" class="chatbot-float" title="Ask Chatbot">🤖</a>
+
+<script>
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('open');
+        document.getElementById('overlay').classList.toggle('open');
+    }
+</script>
+</body>
+</html>

@@ -1,11 +1,44 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
-<nav th:fragment="navbar" style="background:#333; padding:15px; color:white; display:flex; align-items:center;">
-    <span style="font-weight:bold;">🎯 BunkBuster</span>
-    <a href="/student/home" style="color:white; margin-left:20px; text-decoration:none;">Home</a>
-    <a href="/chatbot" style="color:white; margin-left:20px; text-decoration:none;">Chatbot</a>
-    <a href="/auth/logout" style="color:#ff6b6b; margin-left:auto; text-decoration:none;">Logout</a>
-</nav>
+
+<header class="topbar" th:fragment="navbar(student)">
+
+    <!-- LEFT: BunkBuster -->
+    <div class="topbar-brand">
+        <span class="brand-icon-nav">🎯</span>
+        <span class="brand-name-nav">BunkBuster</span>
+    </div>
+
+    <!-- RIGHT: Home + Bell + User -->
+    <div class="topbar-actions">
+
+        <!-- HOME ICON -->
+        <a th:href="@{/student/home}" class="topbar-icon-btn" title="Home">
+            🏠
+        </a>
+
+        <!-- NOTIFICATION BELL → CLICK GOES TO NOTICES PAGE -->
+        <a th:href="@{/student/notices}" class="topbar-icon-btn" title="Notices">
+            🔔
+            <span class="icon-badge">5</span>
+        </a>
+
+        <!-- USER CHIP -->
+        <button class="user-chip-btn" onclick="toggleSidebar()" title="Open Menu">
+            <div class="chip-avatar">
+                <img th:if="${student != null and student.profilePhoto != null}"
+                     th:src="${student.profilePhoto}" alt="me">
+                <span th:unless="${student != null and student.profilePhoto != null}"
+                      th:text="${student != null ? #strings.substring(student.name, 0, 1) : 'S'}">R</span>
+            </div>
+            <span class="chip-name"
+                  th:text="${student != null ? student.name : 'Student'}">Rahul Kumar</span>
+            <span class="chip-caret">▾</span>
+        </button>
+
+    </div>
+</header>
+
 </body>
 </html>

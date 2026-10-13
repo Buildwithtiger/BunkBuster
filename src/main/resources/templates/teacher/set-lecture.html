@@ -1,23 +1,100 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><title>Lectures</title>
-<link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<head>
+    <meta charset="UTF-8">
+    <title>Set Lecture — BunkBuster</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
 <body>
-<div class="dashboard-wrapper">
-    <aside class="sidebar">
-        <div class="sidebar-brand">🎯 BunkBuster</div>
-        <nav class="sidebar-menu">
-            <a href="/teacher/dashboard">🏠 Dashboard</a>
-            <a href="/teacher/lectures" class="active">📅 Lectures</a>
-            <a href="/auth/logout" style="color:#ff6b6b;">🚪 Logout</a>
-        </nav>
-    </aside>
-    <main class="main-content">
-        <header class="topbar"><h1>📅 Set Lecture</h1></header>
-        <section class="section">
-            <p>Lecture module coming soon...</p>
-        </section>
-    </main>
-</div>
+
+<div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <span>🎯 BunkBuster</span>
+        <button class="sidebar-close" onclick="toggleSidebar()">✕</button>
+    </div>
+    <nav class="sidebar-menu">
+        <a href="/teacher/dashboard">🏠 Dashboard</a>
+        <a href="/teacher/students">👥 Students</a>
+        <a href="/teacher/students/add">➕ Add Student</a>
+        <a href="/teacher/at-risk">⚠️ At Risk</a>
+        <a href="/teacher/lectures" class="active">📅 Lectures</a>
+        <a href="/teacher/notices">📢 Notices</a>
+        <a href="/teacher/reports">📊 Reports</a>
+        <a href="/auth/logout" style="color:#ff6b6b;">🚪 Logout</a>
+    </nav>
+</aside>
+
+<main class="main-content">
+   <div th:replace="~{common/navbar :: navbar(${student})}"></div>
+
+    <section class="section" style="max-width:600px;">
+        <h2>Create New Lecture</h2>
+        <p style="color:#64748b;font-size:13px;margin-bottom:15px;">
+            Lecture sirf <b>duration</b> ke liye live rahega. Uske baad student side se automatically hat jayega.
+        </p>
+        <form method="post" th:action="@{/teacher/lectures/add}">
+            <label>Subject *</label>
+            <input type="text" name="subject" required placeholder="Java Programming">
+
+            <label>Class *</label>
+            <input type="text" name="className" required placeholder="BCA-3">
+
+            <label>Duration (minutes) *</label>
+            <input type="number" name="durationMinutes" required min="1" max="180" value="45">
+
+            <label>Latitude (optional)</label>
+            <input type="number" step="any" name="latitude" placeholder="28.6139">
+
+            <label>Longitude (optional)</label>
+            <input type="number" step="any" name="longitude" placeholder="77.2090">
+
+            <label>Geofence Radius (meters)</label>
+            <input type="number" name="geofenceRadius" value="50">
+
+            <button type="submit" class="btn-primary" style="margin-top:20px;">Create Lecture</button>
+        </form>
+    </section>
+
+    <section class="section">
+        <h2>All Lectures</h2>
+        <table class="data-table">
+            <thead>
+                <tr><th>Subject</th><th>Class</th><th>Start</th><th>End</th><th>Status</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="l : ${lectures}">
+                <td th:text="${l.subject}">-</td>
+                <td th:text="${l.className}">-</td>
+                <td th:text="${#temporals.format(l.startTime, 'dd MMM HH:mm')}">-</td>
+                <td th:text="${#temporals.format(l.endTime, 'dd MMM HH:mm')}">-</td>
+                <td>
+                    <span th:if="${l.endTime.isAfter(T(java.time.LocalDateTime).now())}"
+                          style="color:#10b981;font-weight:600;">🟢 Active</span>
+                    <span th:unless="${l.endTime.isAfter(T(java.time.LocalDateTime).now())}"
+                          style="color:#94a3b8;">⚪ Expired</span>
+                </td>
+                <td>
+                    <a th:href="@{'/teacher/lectures/delete/' + ${l.id}}" class="btn-icon"
+                       onclick="return confirm('Delete?')">Delete</a>
+                </td>
+            </tr>
+            <tr th:if="${lectures == null or lectures.isEmpty()}">
+                <td colspan="6" style="text-align:center;color:#94a3b8;padding:20px;">
+                    No lectures yet.
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+</main>
+
+<script>
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('open');
+        document.getElementById('overlay').classList.toggle('open');
+    }
+</script>
 </body>
 </html>

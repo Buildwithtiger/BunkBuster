@@ -14,10 +14,7 @@
         </nav>
     </aside>
     <main class="main-content">
-        <header class="topbar">
-            <h1>👥 All Students</h1>
-            <a href="/teacher/students/add" class="action-btn" style="width:auto;padding:10px 20px;">➕ Add New</a>
-        </header>
+       <div th:replace="~{common/navbar :: navbar(${student})}"></div>
         <section class="section">
             <table class="data-table">
                 <thead>
