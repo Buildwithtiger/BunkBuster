@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Success — BunkBuster</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <span>🎯 BunkBuster</span>
+        <button class="sidebar-close" onclick="toggleSidebar()">✕</button>
+    </div>
+    <nav class="sidebar-menu">
+        <a href="/student/home">🏠 Dashboard</a>
+        <a href="/student/subjects">📚 Subjects</a>
+        <a href="/student/mark-attendance">✅ Mark Attendance</a>
+        <a href="/student/leaderboard">🏆 Leaderboard</a>
+        <a href="/student/classmates">👥 Classmates</a>
+        <a href="/student/profile">👤 Profile</a>
+        <a href="/auth/logout" style="color:#ff6b6b;">🚪 Logout</a>
+    </nav>
+</aside>
+
+<main class="main-content">
+    <div th:replace="~{common/navbar :: navbar(${student})}"></div>
+
+    <section class="section" style="text-align:center;padding:60px 30px;">
+        <div style="font-size:80px;margin-bottom:20px;">✅</div>
+        <h2 style="font-size:28px;color:#10b981;" th:text="${success}">Present lag gayi!</h2>
+
+        <div style="max-width:400px;margin:30px auto;text-align:left;background:#f0fdf4;padding:20px;border-radius:12px;border-left:4px solid #10b981;">
+            <p style="margin:8px 0;"><b>📚 Lecture:</b> <span th:text="${lectureName}">-</span></p>
+            <p style="margin:8px 0;"><b>⏰ Time:</b> <span th:text="${markedTime}">-</span></p>
+            <p style="margin:8px 0;"><b>📍 Distance:</b> <span th:text="${distance}">-</span> meters</p>
+            <p style="margin:8px 0;color:#10b981;"><b>✅ Location Verified</b></p>
+        </div>
+
+        <a href="/student/home" class="btn-save" style="display:inline-block;margin-top:20px;">🏠 Back to Home</a>
+    </section>
+</main>
+
+<script>
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('open');
+        document.getElementById('overlay').classList.toggle('open');
+    }
+</script>
+</body>
+</html>

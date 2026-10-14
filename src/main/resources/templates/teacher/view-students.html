@@ -3,41 +3,64 @@
 <head><meta charset="UTF-8"><title>Students</title>
 <link rel="stylesheet" th:href="@{/css/style.css}"></head>
 <body>
-<div class="dashboard-wrapper">
-    <aside class="sidebar">
-        <div class="sidebar-brand">🎯 BunkBuster</div>
-        <nav class="sidebar-menu">
-            <a href="/teacher/dashboard">🏠 Dashboard</a>
-            <a href="/teacher/students" class="active">👥 Students</a>
-            <a href="/teacher/students/add">➕ Add Student</a>
-            <a href="/auth/logout" style="color:#ff6b6b;">🚪 Logout</a>
-        </nav>
-    </aside>
-    <main class="main-content">
-       <div th:replace="~{common/navbar :: navbar(${student})}"></div>
-        <section class="section">
-            <table class="data-table">
-                <thead>
-                <tr><th>#</th><th>Name</th><th>Barcode</th><th>Roll</th><th>Class</th><th>Email</th><th>Actions</th></tr>
-                </thead>
-                <tbody>
-                <tr th:each="s, iter : ${students}">
-                    <td th:text="${iter.index + 1}">1</td>
-                    <td th:text="${s.name}">-</td>
-                    <td th:text="${s.barcode}">-</td>
-                    <td th:text="${s.rollNumber}">-</td>
-                    <td th:text="${s.className}">-</td>
-                    <td th:text="${s.email}">-</td>
-                    <td>
-                        <a th:href="@{'/teacher/students/edit/' + ${s.id}}" class="btn-icon">✏️</a>
-                        <a th:href="@{'/teacher/students/delete/' + ${s.id}}" class="btn-icon"
-                           onclick="return confirm('Delete?')">🗑️</a>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </section>
-    </main>
-</div>
+
+<div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand"><span>🎯 BunkBuster</span>
+        <button class="sidebar-close" onclick="toggleSidebar()">✕</button></div>
+    <div class="drawer-profile" th:if="${teacher}">
+        <div class="profile-photo-wrap">
+            <img th:if="${teacher.profilePhoto != null}" th:src="${teacher.profilePhoto}" class="profile-photo">
+            <div th:unless="${teacher.profilePhoto != null}" class="profile-photo default">
+                <span th:text="${#strings.substring(teacher.name, 0, 1)}"></span>
+            </div>
+        </div>
+        <div class="profile-name" th:text="${teacher.name}"></div>
+        <div class="profile-roll"><span th:text="${teacher.subject}"></span> Teacher</div>
+    </div>
+    <nav class="sidebar-menu">
+        <a href="/teacher/dashboard">🏠 Dashboard</a>
+        <a href="/teacher/students" class="active">👥 Students</a>
+        <a href="/teacher/students/add">➕ Add Student</a>
+        <a href="/teacher/teachers-list">👨‍🏫 Teachers</a>
+        <a href="/teacher/lectures">📅 Lectures</a>
+        <a href="/teacher/reports">📊 Reports</a>
+        <a href="/teacher/profile">👤 My Profile</a>
+        <a href="/auth/logout" style="color:#ff6b6b;">🚪 Logout</a>
+    </nav>
+</aside>
+
+<main class="main-content">
+    <div th:replace="~{common/teacher-navbar :: navbar(${teacher})}"></div>
+
+    <section class="section">
+        <h2>👥 All Students</h2>
+        <div class="classmates-grid">
+            <div class="classmate-card" th:each="s : ${students}">
+                <a th:href="@{'/teacher/students/detail/' + ${s.id}}" style="text-decoration:none;color:inherit;">
+                    <div class="classmate-photo-wrap">
+                        <img th:if="${s.profilePhoto != null}" th:src="${s.profilePhoto}" class="classmate-photo">
+                        <div th:unless="${s.profilePhoto != null}" class="classmate-photo default">
+                            <span th:text="${#strings.substring(s.name, 0, 1)}"></span>
+                        </div>
+                    </div>
+                    <div class="classmate-name" th:text="${s.name}"></div>
+                    <div class="classmate-details">
+                        <div class="cm-detail"><span class="cm-label">Class</span><span class="cm-val" th:text="${s.className}"></span></div>
+                        <div class="cm-detail"><span class="cm-label">Roll</span><span class="cm-val" th:text="${s.rollNumber}"></span></div>
+                        <div class="cm-detail"><span class="cm-label">Barcode</span><span class="cm-val" th:text="${s.barcode}"></span></div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script>
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('open');
+        document.getElementById('overlay').classList.toggle('open');
+    }
+</script>
 </body>
 </html>

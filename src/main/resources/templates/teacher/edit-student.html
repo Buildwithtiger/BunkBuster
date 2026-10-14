@@ -1,41 +1,145 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><title>Edit Student</title>
-<link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Student — BunkBuster</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
 <body>
-<div class="dashboard-wrapper">
-    <aside class="sidebar">
-        <div class="sidebar-brand">🎯 BunkBuster</div>
-        <nav class="sidebar-menu">
-            <a href="/teacher/dashboard">🏠 Dashboard</a>
-            <a href="/teacher/students" class="active">👥 Students</a>
-            <a href="/auth/logout" style="color:#ff6b6b;">🚪 Logout</a>
-        </nav>
-    </aside>
-    <main class="main-content">
-        <div th:replace="~{common/navbar :: navbar(${student})}"></div>
-        <section class="section" style="max-width:600px;">
-            <form method="post" th:action="@{'/teacher/students/edit/' + ${student.id}}">
-                <label>Barcode (read-only)</label>
-                <input type="text" th:value="${student.barcode}" disabled>
-                <label>Name *</label>
-                <input type="text" name="name" th:value="${student.name}" required>
-                <label>Email</label>
-                <input type="email" name="email" th:value="${student.email}">
-                <label>Phone</label>
-                <input type="text" name="phone" th:value="${student.phone}">
-                <label>Parent Phone</label>
-                <input type="text" name="parentPhone" th:value="${student.parentPhone}">
-                <label>Gender</label>
-                <input type="text" name="gender" th:value="${student.gender}">
-                <label>Class</label>
-                <input type="text" name="className" th:value="${student.className}">
-                <label>Roll Number</label>
-                <input type="text" name="rollNumber" th:value="${student.rollNumber}">
-                <button type="submit">💾 Save Changes</button>
-            </form>
-        </section>
-    </main>
-</div>
+
+<div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <span>🎯 BunkBuster</span>
+        <button class="sidebar-close" onclick="toggleSidebar()">✕</button>
+    </div>
+    <div class="drawer-profile" th:if="${teacher}">
+        <div class="profile-photo-wrap">
+            <div class="profile-photo default">
+                <span th:text="${#strings.substring(teacher.name, 0, 1)}">T</span>
+            </div>
+        </div>
+        <div class="profile-name" th:text="${teacher.name}">Prof. Sharma</div>
+        <div class="profile-roll">
+            <span th:text="${teacher.subject}">Java</span> Teacher
+        </div>
+    </div>
+    <nav class="sidebar-menu">
+        <a href="/teacher/dashboard">🏠 Dashboard</a>
+        <a href="/teacher/students" class="active">👥 Students</a>
+        <a href="/teacher/students/add">➕ Add Student</a>
+        <a href="/teacher/at-risk">⚠️ At Risk</a>
+        <a href="/teacher/lectures">📅 Lectures</a>
+        <a href="/teacher/reports">📊 Reports</a>
+        <a href="/auth/logout" style="color:#ff6b6b;">🚪 Logout</a>
+    </nav>
+</aside>
+
+<main class="main-content">
+
+    <div th:replace="~{common/teacher-navbar :: navbar(${teacher})}"></div>
+
+    <!-- ═══ FORM CARD ═══ -->
+    <div class="form-card" th:if="${student}">
+
+        <!-- HEADER -->
+        <div class="form-header">
+            <div class="form-header-icon">✏️</div>
+            <div class="form-header-text">
+                <h2>Edit Student</h2>
+                <p>
+                    Update details for
+                    <b th:text="${student.name}">Student</b>
+                    <span class="readonly-badge">ID: <span th:text="${student.id}">1</span></span>
+                </p>
+            </div>
+        </div>
+
+        <!-- FORM -->
+        <form method="post" th:action="@{'/teacher/students/edit/' + ${student.id}}">
+
+            <div class="form-grid">
+
+                <!-- Barcode (readonly) -->
+                <div class="form-group full-width">
+                    <label>Barcode <span class="readonly-badge">🔒 Read-only</span></label>
+                    <input type="text" th:value="${student.barcode}" disabled>
+                </div>
+
+                <!-- Name -->
+                <div class="form-group">
+                    <label>Full Name <span class="req">*</span></label>
+                    <input type="text" name="name" th:value="${student.name}" required placeholder="Enter full name">
+                </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" name="email" th:value="${student.email}" placeholder="student@email.com">
+                </div>
+
+                <!-- Phone -->
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="text" name="phone" th:value="${student.phone}" placeholder="9000000000">
+                </div>
+
+                <!-- Parent Phone -->
+                <div class="form-group">
+                    <label>Parent Phone</label>
+                    <input type="text" name="parentPhone" th:value="${student.parentPhone}" placeholder="8000000000">
+                </div>
+
+                <!-- Gender -->
+                <div class="form-group">
+                    <label>Gender</label>
+                    <select name="gender">
+                        <option value="M" th:selected="${student.gender == 'M'}">👦 Male</option>
+                        <option value="F" th:selected="${student.gender == 'F'}">👧 Female</option>
+                    </select>
+                </div>
+
+                <!-- Class -->
+                <div class="form-group">
+                    <label>Class</label>
+                    <input type="text" name="className" th:value="${student.className}" placeholder="BCA-3">
+                </div>
+
+                <!-- Roll Number -->
+                <div class="form-group">
+                    <label>Roll Number</label>
+                    <input type="text" name="rollNumber" th:value="${student.rollNumber}" placeholder="01">
+                </div>
+
+            </div>
+
+            <!-- ACTIONS -->
+            <div class="form-actions">
+                <button type="submit" class="btn-save">💾 Save Changes</button>
+                <a href="/teacher/students" class="btn-cancel">✕ Cancel</a>
+            </div>
+
+        </form>
+
+    </div>
+
+    <!-- NOT FOUND -->
+    <div class="form-card" th:unless="${student}">
+        <div class="alert-error-box">
+            <span>❌</span>
+            <span>Student not found. Ye student exist nahi karta.</span>
+        </div>
+        <a href="/teacher/students" class="btn-cancel">← Back to Students</a>
+    </div>
+
+</main>
+
+<script>
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('open');
+        document.getElementById('overlay').classList.toggle('open');
+    }
+</script>
 </body>
 </html>

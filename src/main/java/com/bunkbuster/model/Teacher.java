@@ -23,6 +23,9 @@ public class Teacher {
     private String phone;
     private String subject;
 
+    @Column(name = "profile_photo", columnDefinition = "LONGTEXT")
+    private String profilePhoto;
+
     @Column(name = "is_active")
     private Boolean isActive = true;
 
@@ -43,6 +46,8 @@ public class Teacher {
     public void setPhone(String phone) { this.phone = phone; }
     public String getSubject() { return subject; }
     public void setSubject(String subject) { this.subject = subject; }
+    public String getProfilePhoto() { return profilePhoto; }
+    public void setProfilePhoto(String profilePhoto) { this.profilePhoto = profilePhoto; }
     public Boolean getIsActive() { return isActive; }
     public void setIsActive(Boolean isActive) { this.isActive = isActive; }
     public LocalDateTime getCreatedAt() { return createdAt; }

@@ -2,157 +2,115 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Teacher Dashboard</title>
+    <title>Teacher Dashboard — BunkBuster</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-<div class="dashboard-wrapper">
-    <aside class="sidebar">
-        <div class="sidebar-brand">BunkBuster</div>
-        <nav class="sidebar-menu">
-            <a href="/teacher/dashboard" class="active">Dashboard</a>
-            <a href="/teacher/students">Students</a>
-            <a href="/teacher/students/add">Add Student</a>
-            <a href="/teacher/at-risk">At Risk</a>
-            <a href="/teacher/lectures">Lectures</a>
-            <a href="/teacher/notices">Notices</a>
-            <a href="/teacher/reports">Reports</a>
-            <a href="/auth/logout" style="color:#ff6b6b;">Logout</a>
-        </nav>
-    </aside>
-    <main class="main-content">
-        <div th:replace="~{common/navbar :: navbar(${student})}"></div>
 
-        <section class="section">
-            <h2>Aaj ka Live Count</h2>
-            <div class="stats-grid">
-                <div class="stat-card green">
-                    <div class="stat-number" th:text="${presentCount} + '/' + ${totalStudents}">45/50</div>
-                    <div class="stat-label">Present <span th:text="${presentPercent}">90</span>%</div>
-                </div>
-                <div class="stat-card red">
-                    <div class="stat-number" th:text="${absentCount}">5</div>
-                    <div class="stat-label">Absent <span th:text="${absentPercent}">10</span>%</div>
-                </div>
-                <div class="stat-card pink">
-                    <div class="stat-number" th:text="${girlsPresent}">18</div>
-                    <div class="stat-label">Girls Present</div>
-                </div>
-                <div class="stat-card blue">
-                    <div class="stat-number" th:text="${boysPresent}">27</div>
-                    <div class="stat-label">Boys Present</div>
-                </div>
-                <div class="stat-card purple">
-                    <div class="stat-number" th:text="${todayLectures}">3</div>
-                    <div class="stat-label">Lectures Today</div>
-                </div>
+<div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <span>🎯 BunkBuster</span>
+        <button class="sidebar-close" onclick="toggleSidebar()">✕</button>
+    </div>
+    <div class="drawer-profile" th:if="${teacher}">
+        <div class="profile-photo-wrap">
+            <div class="profile-photo default">
+                <span th:text="${#strings.substring(teacher.name, 0, 1)}">T</span>
             </div>
-        </section>
+        </div>
+        <div class="profile-name" th:text="${teacher.name}">Prof. Sharma</div>
+        <div class="profile-roll">
+            <span th:text="${teacher.subject}">Java</span> Teacher
+        </div>
+    </div>
+    <nav class="sidebar-menu">
+        <a href="/teacher/dashboard" class="active">🏠 Dashboard</a>
+        <a href="/teacher/students">👥 Students</a>
+        <a href="/teacher/students/add">➕ Add Student</a>
+        <a href="/teacher/at-risk">⚠️ At Risk</a>
+        <a href="/teacher/lectures">📅 Lectures</a>
+        <a href="/teacher/reports">📊 Reports</a>
+        <a href="/auth/logout" style="color:#ff6b6b;">🚪 Logout</a>
+    </nav>
+</aside>
 
-        <section class="section">
-            <h2>Quick Actions</h2>
-            <div class="actions-grid">
-                <a href="/teacher/students/add" class="action-btn">Add Student</a>
-                <a href="/teacher/lectures" class="action-btn">Set Lecture</a>
-                <a href="/teacher/notices" class="action-btn">Post Notice</a>
-                <a href="/teacher/reports" class="action-btn">View Reports</a>
+<main class="main-content">
+    <div th:replace="~{common/teacher-navbar :: navbar(${teacher})}"></div>
+
+    <!-- LIVE COUNT -->
+    <section class="section">
+        <h2>📊 Aaj ka Live Count <span style="font-size:12px;color:#64748b;font-weight:400;">(Auto-refresh every 10s)</span></h2>
+        <div class="stats-grid">
+            <div class="stat-card green">
+                <div class="stat-number" th:text="${presentToday}">0</div>
+                <div class="stat-label">✅ Present Today</div>
             </div>
-        </section>
-
-        <div class="two-column">
-            <section class="section">
-                <h2>Active Logout OTPs</h2>
-                <table class="data-table">
-                    <thead><tr><th>Student</th><th>Roll</th><th>OTP</th><th>Time</th></tr></thead>
-                    <tbody>
-                    <tr><td>Rahul</td><td>CS001</td><td><b>482916</b></td><td>2:45</td></tr>
-                    <tr><td>Priya</td><td>CS002</td><td><b>731048</b></td><td>1:20</td></tr>
-                    </tbody>
-                </table>
-            </section>
-            <section class="section">
-                <h2>Verification Requests</h2>
-                <table class="data-table">
-                    <thead><tr><th>Student</th><th>Activity</th><th>Action</th></tr></thead>
-                    <tbody>
-                    <tr><td>Amit</td><td>Maths HW</td><td><button class="btn-tick">OK</button></td></tr>
-                    <tr><td>Sneha</td><td>Project</td><td><button class="btn-tick">OK</button></td></tr>
-                    </tbody>
-                </table>
-            </section>
+            <div class="stat-card red">
+                <div class="stat-number" th:text="${absentToday}">0</div>
+                <div class="stat-label">❌ Absent Today</div>
+            </div>
+            <div class="stat-card purple">
+                <div class="stat-number" th:text="${totalStudents}">0</div>
+                <div class="stat-label">👥 Total Students</div>
+            </div>
+            <div class="stat-card pink">
+                <div class="stat-number" th:text="${girlsCount}">0</div>
+                <div class="stat-label">👧 Girls</div>
+            </div>
+            <div class="stat-card blue">
+                <div class="stat-number" th:text="${boysCount}">0</div>
+                <div class="stat-label">👦 Boys</div>
+            </div>
+            <div class="stat-card orange" style="background:linear-gradient(135deg,#f59e0b,#d97706);">
+                <div class="stat-number" th:text="${activeLectures}">0</div>
+                <div class="stat-label">🟢 Active Lectures</div>
+            </div>
         </div>
+    </section>
 
-        <div class="two-column">
-            <section class="section">
-                <h2>Aaj ka Timetable</h2>
-                <table class="data-table">
-                    <thead><tr><th>Time</th><th>Subject</th><th>Status</th></tr></thead>
-                    <tbody>
-                    <tr><td>9:00-9:45</td><td>Maths</td><td>Complete</td></tr>
-                    <tr><td>10:30-11:15</td><td>Maths</td><td>Running</td></tr>
-                    <tr><td>1:00-1:45</td><td>Maths</td><td>Upcoming</td></tr>
-                    </tbody>
-                </table>
-            </section>
-            <section class="section">
-                <h2>At-Risk Students</h2>
-                <table class="data-table">
-                    <thead><tr><th>Name</th><th>Roll</th><th>Attend.</th><th>Score</th></tr></thead>
-                    <tbody>
-                    <tr><td>Rahul</td><td>CS001</td><td>62%</td><td>51</td></tr>
-                    <tr><td>Amit</td><td>CS003</td><td>70%</td><td>68</td></tr>
-                    </tbody>
-                </table>
-                <a href="/teacher/at-risk" class="view-all">View All</a>
-            </section>
+    <section class="section">
+        <h2>⚡ Quick Actions</h2>
+        <div class="actions-grid">
+            <a href="/teacher/students/add" class="action-btn">➕ Add Student</a>
+            <a href="/teacher/lectures" class="action-btn">📅 Set Lecture</a>
+            <a href="/teacher/notices" class="action-btn">📢 Post Notice</a>
+            <a href="/teacher/reports" class="action-btn">📊 View Reports</a>
         </div>
+    </section>
 
-        <div class="two-column">
-            <section class="section">
-                <h2>Top Performers</h2>
-                <table class="data-table">
-                    <thead><tr><th>Rank</th><th>Name</th><th>Attend.</th><th>Activity</th></tr></thead>
-                    <tbody>
-                    <tr><td>1</td><td>Priya</td><td>98%</td><td>100%</td></tr>
-                    <tr><td>2</td><td>Vikas</td><td>95%</td><td>90%</td></tr>
-                    <tr><td>3</td><td>Neha</td><td>92%</td><td>85%</td></tr>
-                    </tbody>
-                </table>
-            </section>
-            <section class="section">
-                <h2>Attendance Chart</h2>
-                <div class="chart-placeholder">
-                    <div class="pie-chart"></div>
-                    <div class="chart-legend">
-                        <span>Present 90%</span><br>
-                        <span>Absent 10%</span>
-                    </div>
-                </div>
-            </section>
-        </div>
+    <section class="section">
+        <h2>👥 Student List</h2>
+        <table class="data-table">
+            <thead>
+            <tr><th>Name</th><th>Roll</th><th>Barcode</th><th>Class</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="s : ${students}">
+                <td th:text="${s.name}">-</td>
+                <td th:text="${s.rollNumber}">-</td>
+                <td th:text="${s.barcode}">-</td>
+                <td th:text="${s.className}">-</td>
+                <td>
+                    <a th:href="@{'/teacher/students/edit/' + ${s.id}}" class="btn-icon">✏️</a>
+                    <a th:href="@{'/teacher/students/delete/' + ${s.id}}" class="btn-icon"
+                       onclick="return confirm('Delete?')">🗑️</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+</main>
 
-        <section class="section">
-            <h2>Student List (Quick View)</h2>
-            <table class="data-table">
-                <thead>
-                <tr><th>Name</th><th>Roll</th><th>Barcode</th><th>Class</th><th>Actions</th></tr>
-                </thead>
-                <tbody>
-                <tr th:each="s : ${students}">
-                    <td th:text="${s.name}">-</td>
-                    <td th:text="${s.rollNumber}">-</td>
-                    <td th:text="${s.barcode}">-</td>
-                    <td th:text="${s.className}">-</td>
-                    <td>
-                        <a th:href="@{'/teacher/students/edit/' + ${s.id}}" class="btn-icon">Edit</a>
-                        <a th:href="@{'/teacher/students/delete/' + ${s.id}}" class="btn-icon"
-                           onclick="return confirm('Delete?')">Delete</a>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </section>
-    </main>
-</div>
+<script>
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('open');
+        document.getElementById('overlay').classList.toggle('open');
+    }
+
+    // Auto-refresh dashboard every 10 seconds (real-time live count)
+    setTimeout(() => { location.reload(); }, 10000);
+</script>
 </body>
 </html>

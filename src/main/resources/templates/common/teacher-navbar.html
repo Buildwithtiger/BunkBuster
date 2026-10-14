@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<header class="topbar" th:fragment="navbar(teacher)">
+    <div class="topbar-brand">
+        <span class="brand-icon-nav">🎯</span>
+        <span class="brand-name-nav">BunkBuster</span>
+    </div>
+    <div class="topbar-actions">
+        <a th:href="@{/teacher/dashboard}" class="topbar-icon-btn" title="Dashboard">🏠</a>
+        <a th:href="@{/teacher/notices}" class="topbar-icon-btn" title="Notices">🔔
+            <span class="icon-badge">3</span></a>
+        <button class="user-chip-btn" onclick="toggleSidebar()">
+            <div class="chip-avatar">
+                <img th:if="${teacher != null and teacher.profilePhoto != null}"
+                     th:src="${teacher.profilePhoto}" alt="me">
+                <span th:unless="${teacher != null and teacher.profilePhoto != null}"
+                      th:text="${teacher != null ? #strings.substring(teacher.name, 0, 1) : 'T'}">T</span>
+            </div>
+            <span class="chip-name" th:text="${teacher != null ? teacher.name : 'Teacher'}">Teacher</span>
+            <span class="chip-caret">▾</span>
+        </button>
+    </div>
+</header>
+</body>
+</html>

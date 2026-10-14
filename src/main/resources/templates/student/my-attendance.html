@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>My Attendance</title>
+<link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<body>
+
+<div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand"><span>🎯 BunkBuster</span>
+        <button class="sidebar-close" onclick="toggleSidebar()">✕</button></div>
+    <div class="drawer-profile" th:if="${student}">
+        <div class="profile-photo-wrap">
+            <img th:if="${student.profilePhoto != null}" th:src="${student.profilePhoto}" class="profile-photo">
+            <div th:unless="${student.profilePhoto != null}" class="profile-photo default">
+                <span th:text="${#strings.substring(student.name, 0, 1)}"></span>
+            </div>
+        </div>
+        <div class="profile-name" th:text="${student.name}"></div>
+        <div class="profile-roll"><span th:text="${student.className}"></span> · Roll <span th:text="${student.rollNumber}"></span></div>
+    </div>
+    <nav class="sidebar-menu">
+        <a href="/student/home">🏠 Dashboard</a>
+        <a href="/student/subjects">📚 Subjects</a>
+        <a href="/student/mark-attendance">✅ Mark Attendance</a>
+        <a href="/student/my-attendance" class="active">📊 My Attendance</a>
+        <a href="/student/leaderboard">🏆 Leaderboard</a>
+        <a href="/student/classmates">👥 Classmates</a>
+        <a href="/student/profile">👤 Profile</a>
+        <a href="/auth/logout" style="color:#ff6b6b;">🚪 Logout</a>
+    </nav>
+</aside>
+
+<main class="main-content">
+    <div th:replace="~{common/navbar :: navbar(${student})}"></div>
+
+    <section class="section">
+        <h2>📊 My Attendance — Last 30 Days</h2>
+        <p style="color:#64748b;font-size:13px;margin-bottom:15px;"
+           th:text="'From ' + ${#temporals.format(startDate, 'dd MMM yyyy')} + ' to ' + ${#temporals.format(endDate, 'dd MMM yyyy')}"></p>
+
+        <div class="stats-grid" style="margin-bottom:25px;">
+            <div class="stat-card green"><div class="stat-number" th:text="${presentCount}">0</div><div class="stat-label">✅ Present</div></div>
+            <div class="stat-card red"><div class="stat-number" th:text="${absentCount}">0</div><div class="stat-label">❌ Absent</div></div>
+            <div class="stat-card purple"><div class="stat-number" th:text="${totalCount}">0</div><div class="stat-label">📊 Total</div></div>
+            <div class="stat-card blue"><div class="stat-number" th:text="${percent} + '%'">0%</div><div class="stat-label">📈 Percentage</div></div>
+        </div>
+
+        <h3 style="margin-bottom:15px;color:#1e293b;">📅 Daily Calendar</h3>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:12px;">
+            <div th:each="entry : ${dayStatus}" 
+                 class="day-card"
+                 th:classappend="${entry.value == 'PRESENT'} ? 'present' : 'absent'">
+                <div class="day-date" th:text="${#temporals.format(entry.key, 'dd MMM')}"></div>
+                <div class="day-status" th:text="${entry.value == 'PRESENT'} ? '✅' : '❌'"></div>
+            </div>
+        </div>
+        <div th:if="${dayStatus == null or dayStatus.isEmpty()}" style="text-align:center;padding:40px;color:#94a3b8;">
+            No attendance records yet.
+        </div>
+
+        <h3 style="margin-top:30px;margin-bottom:15px;color:#1e293b;">📋 Detailed History</h3>
+        <table class="data-table">
+            <thead><tr><th>Date</th><th>Subject</th><th>Status</th><th>Time</th></tr></thead>
+            <tbody>
+            <tr th:each="a : ${attendances}">
+                <td th:text="${#temporals.format(a.date, 'dd MMM yyyy')}"></td>
+                <td th:text="${a.lecture != null ? a.lecture.subject : '-'}"></td>
+                <td>
+                    <span th:if="${a.status.toString() == 'PRESENT'}" style="color:#10b981;font-weight:700;">✅ Present</span>
+                    <span th:if="${a.status.toString() == 'ABSENT'}" style="color:#ef4444;font-weight:700;">❌ Absent</span>
+                </td>
+                <td th:text="${a.markedAt != null ? #temporals.format(a.markedAt, 'HH:mm') : '-'}"></td>
+            </tr>
+            <tr th:if="${attendances == null or attendances.isEmpty()}">
+                <td colspan="4" style="text-align:center;color:#94a3b8;padding:20px;">No records yet.</td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+</main>
+
+<script>
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('open');
+        document.getElementById('overlay').classList.toggle('open');
+    }
+</script>
+</body>
+</html>

@@ -1,89 +1,98 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Set Lecture — BunkBuster</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-</head>
+<head><meta charset="UTF-8"><title>Lectures</title>
+<link rel="stylesheet" th:href="@{/css/style.css}"></head>
 <body>
 
 <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
-
 <aside class="sidebar" id="sidebar">
-    <div class="sidebar-brand">
-        <span>🎯 BunkBuster</span>
-        <button class="sidebar-close" onclick="toggleSidebar()">✕</button>
+    <div class="sidebar-brand"><span>🎯 BunkBuster</span>
+        <button class="sidebar-close" onclick="toggleSidebar()">✕</button></div>
+    <div class="drawer-profile" th:if="${teacher}">
+        <div class="profile-photo-wrap">
+            <img th:if="${teacher.profilePhoto != null}" th:src="${teacher.profilePhoto}" class="profile-photo">
+            <div th:unless="${teacher.profilePhoto != null}" class="profile-photo default">
+                <span th:text="${#strings.substring(teacher.name, 0, 1)}"></span>
+            </div>
+        </div>
+        <div class="profile-name" th:text="${teacher.name}"></div>
+        <div class="profile-roll"><span th:text="${teacher.subject}"></span> Teacher</div>
     </div>
     <nav class="sidebar-menu">
         <a href="/teacher/dashboard">🏠 Dashboard</a>
         <a href="/teacher/students">👥 Students</a>
         <a href="/teacher/students/add">➕ Add Student</a>
-        <a href="/teacher/at-risk">⚠️ At Risk</a>
+        <a href="/teacher/teachers-list">👨‍🏫 Teachers</a>
         <a href="/teacher/lectures" class="active">📅 Lectures</a>
-        <a href="/teacher/notices">📢 Notices</a>
         <a href="/teacher/reports">📊 Reports</a>
+        <a href="/teacher/profile">👤 My Profile</a>
         <a href="/auth/logout" style="color:#ff6b6b;">🚪 Logout</a>
     </nav>
 </aside>
 
 <main class="main-content">
-   <div th:replace="~{common/navbar :: navbar(${student})}"></div>
+    <div th:replace="~{common/teacher-navbar :: navbar(${teacher})}"></div>
 
-    <section class="section" style="max-width:600px;">
-        <h2>Create New Lecture</h2>
-        <p style="color:#64748b;font-size:13px;margin-bottom:15px;">
-            Lecture sirf <b>duration</b> ke liye live rahega. Uske baad student side se automatically hat jayega.
-        </p>
+    <div class="form-card" style="margin-bottom:20px;">
+        <div class="form-header">
+            <div class="form-header-icon">📅</div>
+            <div class="form-header-text">
+                <h2>Create New Lecture</h2>
+                <p>Duration ke baad auto-expire, ya manually expire karo</p>
+            </div>
+        </div>
+
         <form method="post" th:action="@{/teacher/lectures/add}">
-            <label>Subject *</label>
-            <input type="text" name="subject" required placeholder="Java Programming">
-
-            <label>Class *</label>
-            <input type="text" name="className" required placeholder="BCA-3">
-
-            <label>Duration (minutes) *</label>
-            <input type="number" name="durationMinutes" required min="1" max="180" value="45">
-
-            <label>Latitude (optional)</label>
-            <input type="number" step="any" name="latitude" placeholder="28.6139">
-
-            <label>Longitude (optional)</label>
-            <input type="number" step="any" name="longitude" placeholder="77.2090">
-
-            <label>Geofence Radius (meters)</label>
-            <input type="number" name="geofenceRadius" value="50">
-
-            <button type="submit" class="btn-primary" style="margin-top:20px;">Create Lecture</button>
+            <div class="form-grid">
+                <div class="form-group"><label>Subject <span class="req">*</span></label>
+                    <input type="text" name="subject" required placeholder="Java Programming"></div>
+                <div class="form-group"><label>Class <span class="req">*</span></label>
+                    <input type="text" name="className" required placeholder="BCA-3"></div>
+                <div class="form-group"><label>Duration (min) <span class="req">*</span></label>
+                    <input type="number" name="durationMinutes" required min="1" max="180" value="45"></div>
+                <div class="form-group"><label>Geofence Radius (m)</label>
+                    <input type="number" name="geofenceRadius" value="50"></div>
+                <div class="form-group"><label>Latitude</label>
+                    <input type="number" step="any" name="latitude" placeholder="28.6139"></div>
+                <div class="form-group"><label>Longitude</label>
+                    <input type="number" step="any" name="longitude" placeholder="77.2090"></div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn-save">📅 Create Lecture</button>
+            </div>
         </form>
-    </section>
+    </div>
 
     <section class="section">
-        <h2>All Lectures</h2>
+        <h2>📋 All Lectures</h2>
         <table class="data-table">
-            <thead>
-                <tr><th>Subject</th><th>Class</th><th>Start</th><th>End</th><th>Status</th><th>Action</th></tr>
-            </thead>
+            <thead><tr><th>Subject</th><th>Class</th><th>Start</th><th>End</th><th>Status</th><th>Actions</th></tr></thead>
             <tbody>
             <tr th:each="l : ${lectures}">
-                <td th:text="${l.subject}">-</td>
-                <td th:text="${l.className}">-</td>
-                <td th:text="${#temporals.format(l.startTime, 'dd MMM HH:mm')}">-</td>
-                <td th:text="${#temporals.format(l.endTime, 'dd MMM HH:mm')}">-</td>
+                <td><b th:text="${l.subject}"></b></td>
+                <td th:text="${l.className}"></td>
+                <td th:text="${#temporals.format(l.startTime, 'dd MMM HH:mm')}"></td>
+                <td th:text="${#temporals.format(l.endTime, 'dd MMM HH:mm')}"></td>
                 <td>
-                    <span th:if="${l.endTime.isAfter(T(java.time.LocalDateTime).now())}"
-                          style="color:#10b981;font-weight:600;">🟢 Active</span>
-                    <span th:unless="${l.endTime.isAfter(T(java.time.LocalDateTime).now())}"
+                    <span th:if="${l.endTime.isAfter(T(java.time.LocalDateTime).now()) and l.active}"
+                          style="color:#10b981;font-weight:700;">🟢 Active</span>
+                    <span th:unless="${l.endTime.isAfter(T(java.time.LocalDateTime).now()) and l.active}"
                           style="color:#94a3b8;">⚪ Expired</span>
                 </td>
                 <td>
+                    <a th:if="${l.endTime.isAfter(T(java.time.LocalDateTime).now()) and l.active}"
+                       th:href="@{'/teacher/lectures/expire/' + ${l.id}}"
+                       class="btn-icon"
+                       style="background:#f59e0b;color:white;padding:6px 12px;border-radius:6px;"
+                       onclick="return confirm('Expire karna chahte ho? Jo students ne abhi tak mark nahi kiya, unko ABSENT lag jayega.')">
+                        ⏹️ Expire
+                    </a>
                     <a th:href="@{'/teacher/lectures/delete/' + ${l.id}}" class="btn-icon"
-                       onclick="return confirm('Delete?')">Delete</a>
+                       onclick="return confirm('Delete?')">🗑️</a>
                 </td>
             </tr>
             <tr th:if="${lectures == null or lectures.isEmpty()}">
-                <td colspan="6" style="text-align:center;color:#94a3b8;padding:20px;">
-                    No lectures yet.
-                </td>
+                <td colspan="6" style="text-align:center;color:#94a3b8;padding:20px;">No lectures yet.</td>
             </tr>
             </tbody>
         </table>

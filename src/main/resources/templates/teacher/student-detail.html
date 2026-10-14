@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Student Detail</title>
+<link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<body>
+
+<div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand"><span>🎯 BunkBuster</span>
+        <button class="sidebar-close" onclick="toggleSidebar()">✕</button></div>
+    <div class="drawer-profile" th:if="${teacher}">
+        <div class="profile-photo-wrap">
+            <img th:if="${teacher.profilePhoto != null}" th:src="${teacher.profilePhoto}" class="profile-photo">
+            <div th:unless="${teacher.profilePhoto != null}" class="profile-photo default">
+                <span th:text="${#strings.substring(teacher.name, 0, 1)}"></span>
+            </div>
+        </div>
+        <div class="profile-name" th:text="${teacher.name}"></div>
+        <div class="profile-roll"><span th:text="${teacher.subject}"></span> Teacher</div>
+    </div>
+    <nav class="sidebar-menu">
+        <a href="/teacher/dashboard">🏠 Dashboard</a>
+        <a href="/teacher/students" class="active">👥 Students</a>
+        <a href="/teacher/students/add">➕ Add Student</a>
+        <a href="/teacher/teachers-list">👨‍🏫 Teachers</a>
+        <a href="/teacher/lectures">📅 Lectures</a>
+        <a href="/teacher/reports">📊 Reports</a>
+        <a href="/teacher/profile">👤 My Profile</a>
+        <a href="/auth/logout" style="color:#ff6b6b;">🚪 Logout</a>
+    </nav>
+</aside>
+
+<main class="main-content">
+    <div th:replace="~{common/teacher-navbar :: navbar(${teacher})}"></div>
+
+    <section class="section">
+        <div style="display:flex;gap:20px;align-items:center;margin-bottom:25px;flex-wrap:wrap;">
+            <div style="width:90px;height:90px;border-radius:50%;overflow:hidden;background:linear-gradient(135deg,#667eea,#764ba2);flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+                <img th:if="${studentDetail.profilePhoto != null}" th:src="${studentDetail.profilePhoto}" style="width:100%;height:100%;object-fit:cover;">
+                <span th:unless="${studentDetail.profilePhoto != null}" style="color:white;font-size:36px;font-weight:800;"
+                      th:text="${#strings.substring(studentDetail.name, 0, 1)}"></span>
+            </div>
+            <div>
+                <h2 th:text="${studentDetail.name}" style="text-align:left;margin:0;"></h2>
+                <p style="color:#64748b;margin-top:6px;">
+                    <b th:text="${studentDetail.className}"></b> ·
+                    Roll <b th:text="${studentDetail.rollNumber}"></b> ·
+                    Barcode <b th:text="${studentDetail.barcode}"></b>
+                </p>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card green"><div class="stat-number" th:text="${presentCount}"></div><div class="stat-label">✅ Present</div></div>
+            <div class="stat-card red"><div class="stat-number" th:text="${absentCount}"></div><div class="stat-label">❌ Absent</div></div>
+            <div class="stat-card purple"><div class="stat-number" th:text="${totalCount}"></div><div class="stat-label">📊 Total</div></div>
+            <div class="stat-card blue"><div class="stat-number" th:text="${percent} + '%'"></div><div class="stat-label">📈 Percentage</div></div>
+        </div>
+
+        <h3 style="margin:25px 0 15px;color:#1e293b;">📋 Last 30 Days Attendance</h3>
+        <table class="data-table">
+            <thead><tr><th>Date</th><th>Subject</th><th>Status</th><th>Time</th><th>Distance</th></tr></thead>
+            <tbody>
+            <tr th:each="a : ${attendances}">
+                <td th:text="${#temporals.format(a.date, 'dd MMM yyyy')}"></td>
+                <td th:text="${a.lecture != null ? a.lecture.subject : '-'}"></td>
+                <td>
+                    <span th:if="${a.status.toString() == 'PRESENT'}" style="color:#10b981;font-weight:700;">✅ Present</span>
+                    <span th:if="${a.status.toString() == 'ABSENT'}" style="color:#ef4444;font-weight:700;">❌ Absent</span>
+                </td>
+                <td th:text="${a.markedAt != null ? #temporals.format(a.markedAt, 'HH:mm') : '-'}"></td>
+                <td th:text="${a.distanceFromClass != null and a.distanceFromClass > 0 ? #numbers.formatDecimal(a.distanceFromClass, 1, 0) + ' m' : '-'}"></td>
+            </tr>
+            <tr th:if="${attendances == null or attendances.isEmpty()}">
+                <td colspan="5" style="text-align:center;color:#94a3b8;padding:20px;">No attendance records.</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <a href="/teacher/students" class="btn-cancel" style="display:inline-block;margin-top:20px;">← Back to Students</a>
+    </section>
+</main>
+
+<script>
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('open');
+        document.getElementById('overlay').classList.toggle('open');
+    }
+</script>
+</body>
+</html>

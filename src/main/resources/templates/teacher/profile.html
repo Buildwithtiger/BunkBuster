@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>My Profile — BunkBuster</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <span>🎯 BunkBuster</span>
+        <button class="sidebar-close" onclick="toggleSidebar()">✕</button>
+    </div>
+    <div class="drawer-profile" th:if="${teacher}">
+        <div class="profile-photo-wrap">
+            <img th:if="${teacher.profilePhoto != null}" th:src="${teacher.profilePhoto}" class="profile-photo">
+            <div th:unless="${teacher.profilePhoto != null}" class="profile-photo default">
+                <span th:text="${#strings.substring(teacher.name, 0, 1)}">T</span>
+            </div>
+        </div>
+        <div class="profile-name" th:text="${teacher.name}">Prof. Sharma</div>
+        <div class="profile-roll">
+            <span th:text="${teacher.subject}">Java</span> Teacher
+        </div>
+    </div>
+    <nav class="sidebar-menu">
+        <a href="/teacher/dashboard">🏠 Dashboard</a>
+        <a href="/teacher/students">👥 Students</a>
+        <a href="/teacher/students/add">➕ Add Student</a>
+        <a href="/teacher/teachers-list">👨‍🏫 Teachers</a>
+        <a href="/teacher/lectures">📅 Lectures</a>
+        <a href="/teacher/reports">📊 Reports</a>
+        <a href="/teacher/profile" class="active">👤 My Profile</a>
+        <a href="/auth/logout" style="color:#ff6b6b;">🚪 Logout</a>
+    </nav>
+</aside>
+
+<main class="main-content">
+
+    <div th:replace="~{common/teacher-navbar :: navbar(${teacher})}"></div>
+
+    <!-- PROFILE HEADER with photo -->
+    <section class="section profile-header-card" th:if="${teacher}">
+        <div class="profile-hero">
+
+            <!-- PHOTO with upload -->
+            <div class="profile-hero-photo" style="width:180px;height:180px;position:relative;">
+
+                <!-- Circular photo -->
+                <div style="
+                    width:180px;height:180px;border-radius:50%;overflow:hidden;
+                    border:5px solid #667eea;
+                    box-shadow:0 8px 30px rgba(102,126,234,0.35);
+                    background:linear-gradient(135deg,#667eea,#764ba2);
+                    display:flex;align-items:center;justify-content:center;
+                ">
+                    <img th:if="${teacher.profilePhoto != null}"
+                         th:src="${teacher.profilePhoto}"
+                         style="width:100%;height:100%;object-fit:cover;">
+                    <span th:unless="${teacher.profilePhoto != null}"
+                          style="color:white;font-size:72px;font-weight:800;"
+                          th:text="${#strings.substring(teacher.name, 0, 1)}">T</span>
+                </div>
+
+                <!-- Camera button -->
+                <form th:action="@{/teacher/upload-photo}" method="post"
+                      enctype="multipart/form-data"
+                      style="position:absolute;bottom:10px;right:10px;">
+
+                    <input type="file" id="teacherPhoto" name="photo"
+                           accept="image/*" style="display:none;"
+                           onchange="this.form.submit();">
+
+                    <label for="teacherPhoto" style="
+                        display:flex;align-items:center;justify-content:center;
+                        width:50px;height:50px;background:#667eea;color:white;
+                        border-radius:50%;cursor:pointer;font-size:22px;
+                        box-shadow:0 6px 15px rgba(102,126,234,0.5);
+                        border:3px solid white;transition:0.2s;
+                    " onmouseover="this.style.transform='scale(1.1)'"
+                       onmouseout="this.style.transform='scale(1)'">
+                        📷
+                    </label>
+                </form>
+
+            </div>
+
+            <!-- INFO -->
+            <div class="profile-hero-info" style="flex:1;">
+                <h2 th:text="${teacher.name}" style="font-size:32px;text-align:left;margin-bottom:8px;">Prof. Sharma</h2>
+                <p style="color:#64748b;font-size:15px;margin-bottom:6px;">
+                    📚 Subject: <b th:text="${teacher.subject}">Java</b>
+                </p>
+                <p style="color:#64748b;font-size:15px;margin-bottom:20px;">
+                    📧 Email: <b th:text="${teacher.email}">teacher@test.com</b>
+                </p>
+
+                <div style="background:#fef3c7;border-left:4px solid #f59e0b;padding:12px 16px;border-radius:8px;max-width:500px;">
+                    <b style="color:#92400e;">💡 Tip:</b>
+                    <span style="color:#78350f;font-size:14px;">
+                        Camera icon (📷) pe click karo apni profile photo upload karne ke liye.
+                    </span>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- DETAILS -->
+    <section class="section" th:if="${teacher}">
+        <h2>📋 My Details</h2>
+        <div class="details-grid">
+            <div class="detail-item">
+                <div class="detail-label">Full Name</div>
+                <div class="detail-value" th:text="${teacher.name}">-</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Email</div>
+                <div class="detail-value" th:text="${teacher.email}">-</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Phone</div>
+                <div class="detail-value" th:text="${teacher.phone}">-</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Subject</div>
+                <div class="detail-value" th:text="${teacher.subject}">-</div>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<script>
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('open');
+        document.getElementById('overlay').classList.toggle('open');
+    }
+</script>
+</body>
+</html>

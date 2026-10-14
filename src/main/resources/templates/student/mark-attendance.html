@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Mark Attendance — BunkBuster</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand"><span>🎯 BunkBuster</span>
+        <button class="sidebar-close" onclick="toggleSidebar()">✕</button></div>
+    <div class="drawer-profile" th:if="${student}">
+        <div class="profile-photo-wrap">
+            <img th:if="${student.profilePhoto != null}" th:src="${student.profilePhoto}" class="profile-photo">
+            <div th:unless="${student.profilePhoto != null}" class="profile-photo default">
+                <span th:text="${#strings.substring(student.name, 0, 1)}">R</span>
+            </div>
+        </div>
+        <div class="profile-name" th:text="${student.name}">Student</div>
+        <div class="profile-roll"><span th:text="${student.className}">BCA-3</span> · Roll <span th:text="${student.rollNumber}">01</span></div>
+    </div>
+    <nav class="sidebar-menu">
+        <a href="/student/home">🏠 Dashboard</a>
+        <a href="/student/subjects">📚 Subjects</a>
+        <a href="/student/mark-attendance" class="active">✅ Mark Attendance</a>
+        <a href="/student/my-attendance">📊 My Attendance</a>
+        <a href="/student/leaderboard">🏆 Leaderboard</a>
+        <a href="/student/classmates">👥 Classmates</a>
+        <a href="/student/profile">👤 Profile</a>
+        <a href="/auth/logout" style="color:#ff6b6b;">🚪 Logout</a>
+    </nav>
+</aside>
+
+<main class="main-content">
+    <div th:replace="~{common/navbar :: navbar(${student})}"></div>
+
+    <section class="section">
+        <h2>✅ Mark Attendance</h2>
+        <p style="color:#64748b;font-size:14px;margin-bottom:15px;">
+            <b>Present</b> = GPS verify hoga · <b>Absent</b> = turant mark hoga
+        </p>
+
+        <p th:if="${error}" class="alert-error-box"><span>⚠️</span><span th:text="${error}"></span></p>
+
+        <div id="gpsStatus" style="background:#f0f9ff;border-left:4px solid #3b82f6;padding:14px;border-radius:10px;margin-bottom:20px;">
+            <b>📍 GPS:</b> <span id="gpsText">Fetching...</span>
+        </div>
+
+        <div th:if="${lectures != null and !lectures.isEmpty()}">
+            <div th:each="l : ${lectures}" class="form-card" style="margin-bottom:15px;padding:20px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px;">
+                    <div>
+                        <div style="font-size:18px;font-weight:800;color:#1e293b;" th:text="${l.subject}"></div>
+                        <div style="font-size:13px;color:#64748b;margin-top:4px;">
+                            <span th:text="${l.className}"></span> ·
+                            <span th:text="${#temporals.format(l.startTime, 'HH:mm')} + ' - ' + ${#temporals.format(l.endTime, 'HH:mm')}"></span>
+                        </div>
+                        <div style="font-size:13px;color:#10b981;font-weight:700;margin-top:6px;">
+                            ⏰ Ends in <span class="countdown" th:attr="data-end=${l.endTime}">--:--</span>
+                        </div>
+                    </div>
+
+                    <!-- If already marked -->
+                    <div th:if="${markedLectureIds != null and markedLectureIds.contains(l.id)}"
+                         style="background:#f0fdf4;padding:12px 20px;border-radius:10px;color:#10b981;font-weight:700;">
+                        ✅ Already Marked
+                    </div>
+
+                    <!-- If not marked → 2 buttons -->
+                    <div th:unless="${markedLectureIds != null and markedLectureIds.contains(l.id)}"
+                         style="display:flex;gap:10px;flex-wrap:wrap;">
+                        <form method="post" th:action="@{/student/mark-attendance}" class="present-form"
+                              th:attr="data-lid=${l.id}">
+                            <input type="hidden" name="lectureId" th:value="${l.id}">
+                            <input type="hidden" name="status" value="PRESENT">
+                            <input type="hidden" name="latitude" class="input-lat">
+                            <input type="hidden" name="longitude" class="input-lng">
+                            <input type="hidden" name="accuracy" class="input-acc">
+                            <button type="submit" class="btn-save" style="background:linear-gradient(135deg,#10b981,#059669);" disabled>
+                                ✅ Present
+                            </button>
+                        </form>
+
+                        <form method="post" th:action="@{/student/mark-attendance}">
+                            <input type="hidden" name="lectureId" th:value="${l.id}">
+                            <input type="hidden" name="status" value="ABSENT">
+                            <button type="submit" class="btn-cancel" style="border-color:#ef4444;color:#ef4444;"
+                                    onclick="return confirm('Absent mark karna chahte ho?')">
+                                ❌ Absent
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${lectures == null or lectures.isEmpty()}" style="text-align:center;padding:40px;color:#94a3b8;">
+            <div style="font-size:48px;margin-bottom:10px;">📭</div>
+            <p>Abhi koi active lecture nahi hai.</p>
+        </div>
+    </section>
+</main>
+
+<a href="/chatbot" class="chatbot-float">🤖</a>
+
+<script>
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('open');
+        document.getElementById('overlay').classList.toggle('open');
+    }
+
+    function updateCountdowns() {
+        document.querySelectorAll('.countdown').forEach(el => {
+            const diff = new Date(el.dataset.end) - new Date();
+            if (diff <= 0) { el.textContent = 'Expired'; return; }
+            el.textContent = Math.floor(diff/60000) + 'm ' + Math.floor((diff%60000)/1000) + 's';
+        });
+    }
+    setInterval(updateCountdowns, 1000); updateCountdowns();
+
+    let userLat = null, userLng = null, userAcc = null;
+    if (navigator.geolocation) {
+        navigator.geolocation.watchPosition(
+            (pos) => {
+                userLat = pos.coords.latitude; userLng = pos.coords.longitude; userAcc = pos.coords.accuracy;
+                document.getElementById('gpsText').innerHTML = `✅ Ready (accuracy: ${Math.round(userAcc)}m)`;
+                document.getElementById('gpsStatus').style.background = '#f0fdf4';
+                document.querySelectorAll('.present-form').forEach(f => {
+                    f.querySelector('.input-lat').value = userLat;
+                    f.querySelector('.input-lng').value = userLng;
+                    f.querySelector('.input-acc').value = userAcc;
+                    const btn = f.querySelector('button');
+                    if (btn) btn.disabled = false;
+                });
+            },
+            (err) => {
+                document.getElementById('gpsText').textContent = '❌ GPS deny — Allow karo';
+                document.getElementById('gpsStatus').style.background = '#fef2f2';
+            },
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        );
+    }
+    setTimeout(() => { location.reload(); }, 30000);
+</script>
+</body>
+</html>
